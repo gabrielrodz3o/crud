@@ -24,8 +24,7 @@ type Props = {
  
   return (
     <Flex>
-   
- <UserView user={user.user} />
+
     </Flex>
     
   

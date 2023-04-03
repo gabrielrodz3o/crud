@@ -37,7 +37,7 @@ const Users: React.FC<Props> = (user) => {
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editingUser, setEditingUser] = useState<User | null>({
-    id: null,
+    id:undefined,
     nombre: "",
     username: "",
     password: "",
@@ -56,7 +56,7 @@ const Users: React.FC<Props> = (user) => {
 
   const Onclean = () => {
     setEditingUser({
-      id: null, // provide a default id
+      id: undefined, // provide a default id
       nombre: "",
       username: "",
       password: "",
