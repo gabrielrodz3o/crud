@@ -22,44 +22,39 @@ import {
   useToast,
   IconButton,
   Text,
-  Spacer
+  Spacer,
 } from "@chakra-ui/react";
 
 import React from "react";
-import prisma from "../../lib/prisma";
 
-import { User } from "@prisma/client";
+import { User } from "../../types/user";
 type Props = {
   user: User[];
-  onClick:()=>void;
+  onClick: () => void;
 };
 
 const Users: React.FC<Props> = (user) => {
-
-  const toast = useToast()
+  const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editingUser, setEditingUser] = useState<User | null>({
-    id:null,
+    id: null,
     nombre: "",
     username: "",
     password: "",
   });
 
   const [Users, setUsers] = useState<User[]>([]);
- 
+
   useEffect(() => {
-    
-    setUsers(user.user)
-  })
-  
+    setUsers(user.user);
+  });
+
   const handleEdit = (user: User) => {
     setEditingUser(user);
     onOpen();
   };
 
-
   const Onclean = () => {
- 
     setEditingUser({
       id: null, // provide a default id
       nombre: "",
@@ -68,124 +63,111 @@ const Users: React.FC<Props> = (user) => {
     });
   };
   async function handleSubmit() {
-  try {
-   
+    try {
       fetch("api/user", {
         body: JSON.stringify(editingUser),
         headers: {
           "Content-Type": "application/json",
         },
-        method:editingUser?.id===null? "POST":"PUT",
+        method: editingUser?.id === null ? "POST" : "PUT",
       }).then(async (data) => {
-        if( data.status==200)
-        {
-          user.onClick()
+        if (data.status == 200) {
+          user.onClick();
           onClose();
-          Onclean()
+          Onclean();
           toast({
-            title: editingUser?.id===null? "User create":"User update",
+            title: editingUser?.id === null ? "User create" : "User update",
             description: "",
-            status: 'success',
-            position:'top-right',
+            status: "success",
+            position: "top-right",
             duration: 5000,
             isClosable: true,
-          })
-        }
-        else
-        {
-        
+          });
+        } else {
           toast({
-            title: 'Error .'+data.statusText,
+            title: "Error ." + data.statusText,
             description: "",
-            status: 'error',
-            position:'top-right',
+            status: "error",
+            position: "top-right",
             duration: 5000,
             isClosable: true,
-          })
+          });
         }
-      
-       
-      })
+      });
     } catch (error) {
       toast({
-        title: 'Error .'+error,
+        title: "Error ." + error,
         description: "",
-        status: 'error',
-        position:'top-right',
+        status: "error",
+        position: "top-right",
         duration: 5000,
         isClosable: true,
-      })
+      });
       console.log(error);
     }
   }
 
   const handleDelete = (userToDelete: User) => {
     try {
-   
       fetch("api/user", {
         body: JSON.stringify(userToDelete),
         headers: {
           "Content-Type": "application/json",
         },
-        method:"DELETE",
+        method: "DELETE",
       }).then(async (data) => {
-        if( data.status==200)
-        {
-             user.onClick()
+        if (data.status == 200) {
+          user.onClick();
           onClose();
-          Onclean()
+          Onclean();
           toast({
             title: "Elminado",
             description: "",
-            status: 'success',
-            position:'top-right',
+            status: "success",
+            position: "top-right",
             duration: 5000,
             isClosable: true,
-          })
+          });
         }
-     
-      
-       
-      })
+      });
     } catch (error) {
       toast({
-        title: 'Error .'+error,
+        title: "Error ." + error,
         description: "",
-        status: 'error',
-        position:'top-right',
+        status: "error",
+        position: "top-right",
         duration: 5000,
         isClosable: true,
-      })
+      });
       console.log(error);
     }
   };
 
   return (
     <>
-        
       <Flex
         alignItems="center"
         justifyContent="center"
         marginRight={5}
         marginTop={5}
       >
-          <Text marginLeft={5} fontSize='2xl' fontWeight='bold'>
-            Total de usuario. {Users.length}
-          </Text>
-          <Spacer/>
+        <Text marginLeft={5} fontSize="2xl" fontWeight="bold">
+          Total de usuario. {Users.length}
+        </Text>
+        <Spacer />
         <Button
           alignItems="center"
           justifyContent="end"
           colorScheme="blue"
           mr={3}
-       
-          onClick={()=>{Onclean(),onOpen()}}
+          onClick={() => {
+            Onclean(), onOpen();
+          }}
         >
-
           Nuevo Usuario
         </Button>
       </Flex>
-      <Table variant="striped" >
+      <Table variant="striped">
         <Thead>
           <Tr>
             <Th>Nombre</Th>
@@ -220,47 +202,45 @@ const Users: React.FC<Props> = (user) => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{editingUser?.id===null? "Nuevo usuario":"Editar usuario"}</ModalHeader>
+          <ModalHeader>
+            {editingUser?.id === null ? "Nuevo usuario" : "Editar usuario"}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl>
               <FormLabel>Nombre</FormLabel>
               <Input
                 value={editingUser?.nombre}
-                onChange={(e) =>
-                  setEditingUser({
-                    ...editingUser,
-
+                onChange={(e) => {
+                  setEditingUser((prevUser) => ({
+                    ...prevUser!,
                     nombre: e.target.value,
-                    id: editingUser ? editingUser.id : 0,
-                  })
-                }
+                  }));
+                }}
               />
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>Username</FormLabel>
               <Input
                 value={editingUser?.username}
-                onChange={(e) =>
-                  setEditingUser({
-                    ...editingUser,
+                onChange={(e) => {
+                  setEditingUser((prevUser) => ({
+                    ...prevUser!,
                     username: e.target.value,
-                    id: editingUser ? editingUser.id : 0,
-                  })
-                }
+                  }));
+                }}
               />
             </FormControl>
             <FormControl mt={4}>
               <FormLabel>Password</FormLabel>
               <Input
                 value={editingUser?.password}
-                onChange={(e) =>
-                  setEditingUser({
-                    ...editingUser,
+                onChange={(e) => {
+                  setEditingUser((prevUser) => ({
+                    ...prevUser!,
                     password: e.target.value,
-                    id: editingUser ? editingUser.id : 0,
-                  })
-                }
+                  }));
+                }}
               />
             </FormControl>
           </ModalBody>
@@ -276,7 +256,7 @@ const Users: React.FC<Props> = (user) => {
               //   }
               // }}
             >
-          {editingUser?.id===null? "Guardar":"Actualizar"}
+              {editingUser?.id === null ? "Guardar" : "Actualizar"}
             </Button>
           </ModalFooter>
         </ModalContent>
