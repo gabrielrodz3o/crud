@@ -69,7 +69,7 @@ const Users: React.FC<Props> = (user) => {
         headers: {
           "Content-Type": "application/json",
         },
-        method: editingUser?.id === null ? "POST" : "PUT",
+        method: editingUser?.id === undefined ? "POST" : "PUT",
       }).then(async (data) => {
         if (data.status == 200) {
           user.onClick();
